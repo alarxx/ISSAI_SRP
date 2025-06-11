@@ -51,3 +51,14 @@ ssh -T git@github.com
 # Attempts to ssh to GitHub
 ```
 	-T      Disable pseudo-terminal allocation.
+
+---
+
+## Additional
+
+Также при commit-е нужно будет идентифицироваться:
+
+```sh
+git config --global user.name "John Doe"
+git config --global user.email johndoe@example.com
+```
