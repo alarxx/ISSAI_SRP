@@ -21,7 +21,15 @@ def save(model,
         savings['train_accuracies'] = train_accuracies
     if val_accuracies is not None:
         savings['val_accuracies'] = val_accuracies
+    if val_accuracies is not None:
+        savings['epoch'] = index
     if index >= 0:
         savename = f"{savename}_{index}"
     torch.save(savings, f"{savename}.pth")
     print(f"Saved in file: {savename}.pth")
+
+
+def print_state_dict(model):
+    # Сохраняя state_dict сохраняются и device-ы на котором находились тензоры
+    for name, param in model.state_dict().items():
+        print(f"{name} -> {param.device}")

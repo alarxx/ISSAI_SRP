@@ -11,5 +11,7 @@ def print_available_devices():
         print(f"Number of CUDA devices: {num_devices}")
         for i in range(torch.cuda.device_count()):
             print(f" - CUDA:{i} ({torch.cuda.get_device_name(i)})")
+        return True
     else:
         print("CUDA is not available.")
+        return False

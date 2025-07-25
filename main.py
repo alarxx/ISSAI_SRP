@@ -189,25 +189,25 @@ def compute_accuracy(model, dataloader, device):
 
 
 if __name__ == "__main__":
-    # NEW: Use environment variables set by torchrun if available, otherwise default to single-process.
-    if "WORLD_SIZE" in os.environ:
-        world_size = int(os.environ["WORLD_SIZE"])
-    else:
-        world_size = 1
+    # # NEW: Use environment variables set by torchrun if available, otherwise default to single-process.
+    # if "WORLD_SIZE" in os.environ:
+    #     world_size = int(os.environ["WORLD_SIZE"])
+    # else:
+    #     world_size = 1
 
-    if "LOCAL_RANK" in os.environ:
-        rank = int(os.environ["LOCAL_RANK"])
-    elif "RANK" in os.environ:
-        rank = int(os.environ["RANK"])
-    else:
-        rank = 0
+    # if "LOCAL_RANK" in os.environ:
+    #     rank = int(os.environ["LOCAL_RANK"])
+    # elif "RANK" in os.environ:
+    #     rank = int(os.environ["RANK"])
+    # else:
+    #     rank = 0
 
-    # Only print on rank 0 to avoid duplicate prints from each GPU process
-    if rank == 0:
-        print("PyTorch version:", torch.__version__)
-        print("CUDA available:", torch.cuda.is_available())
-        print("Number of GPUs available:", torch.cuda.device_count())
+    # # Only print on rank 0 to avoid duplicate prints from each GPU process
+    # if rank == 0:
+    #     print("PyTorch version:", torch.__version__)
+    #     print("CUDA available:", torch.cuda.is_available())
+    #     print("Number of GPUs available:", torch.cuda.device_count())
 
-    torch.manual_seed(123)
-    num_epochs = 3
-    main(rank, world_size, num_epochs)
+    # torch.manual_seed(123)
+    # num_epochs = 3
+    # main(rank, world_size, num_epochs)
