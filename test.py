@@ -24,8 +24,6 @@ import torch.multiprocessing as mp
 from torch.utils.data.distributed import DistributedSampler
 from torch.nn.parallel import DistributedDataParallel as DDP
 import torch.distributed as dist
-from torch.distributed import init_process_group, destroy_process_group
-
 
 # On Windows platform, the torch.distributed package only
 # supports Gloo backend, FileStore and TcpStore.
@@ -39,10 +37,16 @@ from torch.distributed import init_process_group, destroy_process_group
 #    world_size=world_size)
 # For TcpStore, same way as on Linux.
 
-def setup(rank, world_size):
-    os.environ['MASTER_ADDR'] = 'localhost' # should be IP on cluster of machines
+def setup(rank: int, world_size: int):
+    """
+    Args:
+        rank: Unique identifier of each process
+        world_size: Total number of processes
+    """
+    os.environ['MASTER_ADDR'] = 'localhost' # on cluster of machines should be explicit IP 
     os.environ['MASTER_PORT'] = '12355' # ports range 2^16: [0, 65535], better choose port>1024
-
+    # https://docs.pytorch.org/tutorials/beginner/ddp_series_multigpu.html#constructing-the-process-group
+    torch.cuda.set_device(rank) # sets the default GPU for each process
     # initialize the process group
     dist.init_process_group(
         backend="nccl", 
@@ -72,7 +76,21 @@ def demo_basic(rank, world_size):
 
     # create model and move it to GPU with id rank
     model = ToyModel().to(rank)
-    ddp_model = DDP(model, device_ids=[rank])
+    ddp_model = DDP(model, device_ids=[rank]) # synchronizes randomly initialized parameters
+
+    CHECKPOINT_PATH = tempfile.gettempdir() + "/model.checkpoint"
+    if rank == 0:
+        # Сохраняя state_dict сохраняются и device-ы на котором находились тензоры, here cuda:0
+        # saver.print_state_dict(model)
+        torch.save(ddp_model.state_dict(), CHECKPOINT_PATH)
+
+    # Use a barrier() to make sure that process 1 loads the model after process 0 saves it.
+    dist.barrier(device_ids=[rank]) # точка синхронизации, задача в очереди GPU по типу all-reduce блокирует thread-GPU
+    # configure map_location properly
+    map_location = {f'cuda:{0}': f'cuda:{rank}'} # map parameters to corresponding process-GPU-device
+    ddp_model.load_state_dict(
+        torch.load(CHECKPOINT_PATH, map_location=map_location, weights_only=True)
+    )
 
     loss_fn = nn.MSELoss()
     optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
@@ -83,15 +101,12 @@ def demo_basic(rank, world_size):
     loss_fn(outputs, labels).backward()
     optimizer.step()
 
+    # Not necessary to use a dist.barrier() to guard the file deletion below
+    if rank == 0:
+        os.remove(CHECKPOINT_PATH)
+
     cleanup()
     print(f"Finished running basic DDP example on rank {rank}.")
-
-
-def run_demo(demo_fn, world_size):
-    mp.spawn(demo_fn,
-             args=(world_size,),
-             nprocs=world_size,
-             join=True)
 
 
 if __name__ == "__main__":
@@ -100,6 +115,9 @@ if __name__ == "__main__":
         exit()
 
     # https://docs.pytorch.org/tutorials/intermediate/ddp_tutorial.html
-
-    model = ToyModel().to(0)
-    saver.print_state_dict(model)
+    world_size = torch.cuda.device_count()
+    assert world_size >= 2, f"Requires at least 2 GPUs to run, but got {world_size}"
+    mp.spawn(demo_basic,
+             args=(world_size,),
+             nprocs=world_size,
+             join=True)
