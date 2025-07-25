@@ -19,7 +19,8 @@ https://github.com/alarxx/ISSAI_SRP/blob/how_to_connect/README.md
 
 ## Getting Started
 
-Here I use python venv.
+In this project I use python venv, 
+because conda have some bugs, it doesn't isolate the project as expected.
 
 Install APT packages:
 ```sh
@@ -41,6 +42,7 @@ pip install numpy
 pip install matplotlib
 pip install pandas
 pip install scikit-learn
+pip install python-dotenv
 ```
 
 To recreate environment:
@@ -53,5 +55,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+or just execute:
+```sh
+./init.sh
+```
+
+---
 
 ## Distributed Data Parallel
