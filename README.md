@@ -111,7 +111,10 @@ source init.sh
 
 ---
 
-## Distributed Data Parallel
+## Distributed Data Parallel (DDP)
+
+В основном, в DDP, синхронизация идет в constructor (grad hooks), forward (BatchNorm) и backward pass (ring all-reduce). Дополнительно, мы можем добавить свои точки синхронизации с помощью `barrier()`.
+Если один процесс загружен больше или там слабее видеокарта, другие процессы могут простаивать в ожидании.
 
 ## Licence
 
