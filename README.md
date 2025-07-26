@@ -116,6 +116,19 @@ source init.sh
 В основном, в DDP, синхронизация идет в constructor (grad hooks), forward (BatchNorm) и backward pass (ring all-reduce). Дополнительно, мы можем добавить свои точки синхронизации с помощью `barrier()`.
 Если один процесс загружен больше или там слабее видеокарта, другие процессы могут простаивать в ожидании.
 
+При вызове `.backward()`, я так понял, все градиенты сначала вычисляются и потом синхронизируются.
+Но, в зависимости от hook, возможно вычисляются и синхронизируются последовательно по слоям.
+Нам в принципе большой разницы нет, потому что мы получаем сразу полностью синхронизированные градиенты.
+
+А на каком девайсе делается step?
+Мы синхронизируем градиенты и потом каждый процесс сам делает step, потому что иначе потом пришлось бы синхронизировать модель
+
+И Data Parallel и Model Parallel подход должны сплетаться вместе при большом количестве видеокарт. Data Parallel подразумевает одну целую копию модели на один GPU, синхронизируя (суммируя) градиенты. Model Parallel, по-моему, должна работать быстрее, так как передается всего-лишь градиент выхода (layer0<-layer1), а не градиенты матриц весов. Удобно, но модель не может быть бесконечно большой, поэтому если есть ещё видеокарты, то можно объединить с идеей Data Parallel:
+```
+[GPU0, GPU1]
+[GPU2, GPU3]
+```
+
 ## Licence
 
 Tensor-library is licensed under the terms of [MPL-2.0](https://mozilla.org/MPL/2.0/), which is simple and straightforward to use, allowing this project to be combined and distributed with any proprietary software, even with static linking. If you modify, only the originally covered files must remain under the same MPL-2.0.
