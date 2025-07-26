@@ -43,6 +43,7 @@ pip install matplotlib
 pip install pandas
 pip install scikit-learn
 pip install python-dotenv
+pip install nvitop
 ```
 
 To recreate environment:
