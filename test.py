@@ -125,8 +125,11 @@ def demo(rank, world_size):
         # Сохраняя state_dict сохраняются и device-ы на котором находились тензоры, here cuda:0
         # saver.print_state_dict(model)
         torch.save(ddp_model.state_dict(), CHECKPOINT_PATH)
+        # What if we call dist.barrier() here, so for rank0 will be twice, will we just stuck on rank0 process?
 
     # Use a barrier() to make sure that process 1 loads the model after process 0 saves it.
+    # A process is blocked by a barrier until all processes have encountered a barrier, upon which the barrier is lifted for all.
+    # IMO, in our case no need to synchronize by device_ids, но было бы нужно если бы на одном процессе 2 потока использовали разные видеокарты асинхронно
     dist.barrier(device_ids=[dev0, dev1]) # точка синхронизации, задача в очереди GPU по типу all-reduce блокирует thread-GPU
     # Configure map_location properly
     # map_location = {f'cuda:{0}': f'cuda:{rank}'} # map parameters to corresponding process-GPU-device
