@@ -17,6 +17,53 @@ https://github.com/alarxx/ISSAI_SRP/blob/how_to_connect/README.md
 
 ---
 
+## Nvidia Drivers on Linux Debian 12 "Bookworm"
+https://wiki.debian.org/NvidiaGraphicsDrivers
+
+**Check devices**
+
+```sh
+lspci -nn | egrep -i "3d|display|vga"
+```
+
+**Prerequisites**
+
+```sh
+apt install linux-headers-amd64 build-essential
+```
+
+**Driver**
+
+Add to `/etc/apt/sources.list` file `contrib` and `non-free`:
+```txt
+# Debian Bookworm
+deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+```
+(Warning: Don't add Sid, it will brake your system)
+
+"proprietary" flavor:
+```sh
+apt update
+apt install nvidia-driver firmware-misc-nonfree
+```
+
+**CUDA**
+
+```sh
+apt install nvidia-cuda-dev nvidia-cuda-toolkit
+```
+
+**Check**
+
+```shell
+# Driver
+nvidia-smi
+# CUDA
+nvcc --version
+```
+
+---
+
 ## Getting Started
 
 In this project I use python venv, 
