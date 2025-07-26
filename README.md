@@ -58,7 +58,7 @@ pip install -r requirements.txt
 
 or just execute:
 ```sh
-./init.sh
+source init.sh
 ```
 
 ---
