@@ -1,5 +1,5 @@
 import torch
-from utils.save import save
+from utils.saver import save
 
 class Trainer:
 

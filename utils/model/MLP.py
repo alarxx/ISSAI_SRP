@@ -1,17 +1,17 @@
+import torch
 from torch import nn
 
 class MLP(nn.Module):
-    def __init__(self, inp, out):
+    def __init__(self, n_in, n_out):
         super().__init__()
         self.flatten = nn.Flatten() # flattens an image to row-vector [<->], so rows are samples -> shape[n, 784]
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(inp, 512),
+            nn.Linear(n_in, 512),
             nn.ReLU(),
             nn.Linear(512, 512),
             nn.ReLU(),
-            nn.Linear(512, out)
+            nn.Linear(512, n_out)
         )
-        self.loss_fn = nn.CrossEntropyLoss()
 
     def forward(self, x):
         x = self.flatten(x)
@@ -22,9 +22,9 @@ class MLP(nn.Module):
         print(f"__setattr__ called: {name} = {value}")
         super().__setattr__(name, value)
 
-    # ---
+    # --- static ---
 
-    def print_info_():
+    def print_info_(model):
         # print(type(nn.Sequential()))
         # print(type(nn.Module()))
         # print(type(model))

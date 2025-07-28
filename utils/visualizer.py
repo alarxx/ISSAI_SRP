@@ -5,6 +5,10 @@ import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
 import tkinter
+# tkinter._test()
+# print(matplotlib.get_backend())
+
+import torch
 
 def plot(entries, xlabel='epoch', ylabel='', title=''):
     fig, ax = plt.subplots()
@@ -36,4 +40,18 @@ def plot4(trloss, tracc, tloss, tacc):
     axs[1][0].set(xlabel='epoch', ylabel="loss", title="Test loss")
     axs[1][1].set(xlabel='epoch', ylabel="accuracy", title="Test accuracy")
     # fig.savefig("test.png")
+    plt.show()
+
+
+def visualize_image_dataset(dataset, classes):
+    figure = plt.figure(figsize=(8, 8))
+    cols, rows = 3, 3
+    for i in range(1, cols * rows + 1):
+        sample_idx = torch.randint(len(dataset), size=(1,)).item()
+        img, label = dataset[sample_idx]
+        # print(img.shape)
+        figure.add_subplot(rows, cols, i)
+        plt.title(classes[label])
+        plt.axis("off")
+        plt.imshow(img.permute(1, 2, 0)) # tensor(C, H, W), а метод принимает img(H, W, C)
     plt.show()

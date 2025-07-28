@@ -1,3 +1,22 @@
+"""
+SPDX-License-Identifier: MPL-2.0
+--------------------------------
+This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+If a copy of the MPL was not distributed with this file,
+You can obtain one at https://mozilla.org/MPL/2.0/.
+
+This file is part of the ISSAI Summer Research Project.
+
+Like ImageFolder(DatasetFolder):
+https://docs.pytorch.org/vision/main/generated/torchvision.datasets.ImageFolder.html
+
+Provided “as is”, without warranty of any kind.
+
+Copyright © 2025 Alar Akilbekov. All rights reserved.
+
+Third party copyrights are property of their respective owners.
+"""
+
 import os
 from PIL import Image
 from torch.utils.data import Dataset, Subset
@@ -6,6 +25,9 @@ from sklearn.model_selection import train_test_split
 # Like ImageFolder
 # dataset = datasets.ImageFolder(root, transform)
 
+"""
+    The root directory should contain class folders, each with example images of that class.
+"""
 class CustomImageDataset(Dataset):
     def __init__(self, root_dir, transform=None):
         self.root_dir = root_dir # path
