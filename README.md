@@ -91,6 +91,7 @@ pip install pandas
 pip install scikit-learn
 pip install python-dotenv
 pip install nvitop
+pip install flash-attn --no-build-isolation
 ```
 
 To recreate environment:
