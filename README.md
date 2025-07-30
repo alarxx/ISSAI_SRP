@@ -91,6 +91,7 @@ pip install pandas
 pip install scikit-learn
 pip install python-dotenv
 pip install nvitop
+pip install transformers
 pip install flash-attn --no-build-isolation
 ```
 
