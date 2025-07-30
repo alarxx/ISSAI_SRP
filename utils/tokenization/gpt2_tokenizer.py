@@ -11,3 +11,5 @@ print(input_ids)
 # токен -> текст
 print(tokenizer.decode(input_ids[0]))
 print(tokenizer.decode(input_ids[1]))
+
+print(tokenizer.tokenize("Hello world"))
